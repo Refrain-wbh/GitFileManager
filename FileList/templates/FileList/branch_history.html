@@ -1,0 +1,120 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>js实现弹出提交表单 </title>
+    <meta charset="utf-8">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    
+    <style>
+
+        .cov{
+            width:2300px;
+            height:100%;
+            background-color:rgba(0, 0, 0,0.5);
+            z-index:1000;
+            display:none;
+            position:absolute;
+            text-align:center;
+            font-size: 16px;
+            box-shadow:0px 0px 5px black;
+        }
+        .con{
+            z-index:1100;
+            width:600px;
+            height:200px;
+            background-color:white;
+            position:fixed;
+            right:30%;
+            top:30%;
+            position:fixed;
+            box-shadow: 0px 0px 15px black;
+        }
+        .ptitle{
+            width:100%;
+            height:35px;
+            background-color:#3daae9;
+            color:white;
+            line-height:35px;
+        }
+        .dbt{
+            border-radius: 5px;
+            width: 70px;
+            height:30px;
+            background-color:#3daae9;
+            right:20px;
+            bottom:20px;
+            position:absolute;
+            line-height:30px;
+            color:white;
+        }
+    </style>
+    <script>
+        
+        function showCon(){
+        $(".cov").show();	
+        }
+        function closeCon(){
+        $(".cov").hide();	
+        }
+    </script>
+</head>
+
+<body>
+
+<!-- 点击按钮 -->
+<!--  弹框的div -->
+<a href="{% url 'FileList:storemain' store_id %}" class="button">文件列表</a>
+
+<div class='cov' id="create_branch_form">
+    <div class = 'con'>
+        <form id="create_branch" action="{% url 'FileList:create_branch' %}" method="post">
+            {% csrf_token %}
+            {{ create_branch.branch_name }}
+            {{ create_branch.commit_id.as_hidden }}
+            {{ create_branch.store_id.as_hidden }}
+            <input type="submit" onclick="closeCon();" value="创建分支">
+            <button  onclick="closeCon();" >取消</button>
+        </form>
+    </div>
+
+</div>
+
+<script>
+    function add(store_id,commit_id) {
+        //document.getElementById('create_branch_back').style.display = 'block';
+        //document.getElementById('create_branch_form').style.display = 'block';
+        showCon();
+        form = document.getElementById('create_branch')
+        form.commit_id.value = commit_id
+        form.store_id.value = store_id
+    }
+</script>
+<table border="8">
+    <thead>
+        <tr>
+            <th>commit_id</th>
+            <th>time</th>
+            <th>state</th>
+            <th>child_num</th>
+            <th>parent_id</th>
+            <th>新建分支</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for commit in commit_list %}
+            <tr>
+                <td>{{ commit.id }}</td>
+                <td>{{ commit.time }}</td>
+                <td>{{ commit.state }}</td>
+                <td>{{ commit.child_num }}</td>
+                <td>{{ commit.parent_id }}</td>
+                <td><a href="javascript:void(0)" onclick="add({{store_id}},{{commit.id}})">新建分支</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+</body>

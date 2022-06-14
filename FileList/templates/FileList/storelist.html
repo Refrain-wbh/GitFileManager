@@ -1,0 +1,28 @@
+
+<table border="8">
+    <thead>
+        <tr>
+            <th>仓库id</th>
+            <th>仓库名</th>
+            <th>工作路径</th>
+            <th>仓库链接</th>
+            
+        </tr>
+    </thead>
+    <tbody>
+        {% for store in storelist %}
+            <tr>
+                <td>{{ store.id }}</td>
+                <td>{{ store.name }}</td>
+                <td>{{ store.work_path }}</td>
+                <td><a href="{% url 'FileList:storemain' store.id  %}">{% url 'FileList:storemain' store.id  %}</a></td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<form id="create store" action="{% url 'FileList:create_store' %}" method="post">
+    {% csrf_token %}
+    {{ create_store }}
+    <input type="submit" value="新建仓库">
+</form>

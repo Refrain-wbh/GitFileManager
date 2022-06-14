@@ -1,0 +1,92 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+</head>
+    
+
+<body> 
+
+<select class="bs-select form-control" data-live-search="true" data-size="8" id="branch_select" name="branch_select" >
+    <option value="">请选择</option>
+    {% for branch in branch_set %}
+    <option value="{{ branch.id }}" {% if branch == work_branch %} selected {% endif %} >{{ branch.name }}</option>
+    {% endfor %}
+    
+</select>
+
+</form>
+<form id="branch-history-form" action="{% url 'FileList:branch_history' store_id %}" method="post">
+    {% csrf_token %}
+    <input type="submit" value="branch_history" />
+</form>
+<a href="{% url 'FileList:storelist' %}">仓库列表</a>
+<table border="8">
+    <thead>
+        <tr>
+            <th>文件名</th>
+            <th>删除</th>
+            <th>下载</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for one_dir,dir_path in dirs %}
+            <tr>
+                <td><a href="{% url 'FileList:storecontent' store_id dir_path   %}">{{ one_dir }}</a></td>
+                <td><a href="{% url 'FileList:delete' store_id dir_path  %}">删除</a></td>
+                <td>  </td>
+            </tr>
+
+        {% endfor %}
+
+        {% for one_file,file_path in files %}
+        <tr>
+            <td>{{ one_file }}</td>
+            <td><a href="{% url 'FileList:delete' store_id file_path  %}">删除</a></td>
+            <td><a href="{% url 'FileList:download' store_id file_path  %}">下载</a></td>
+        
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<form id="upload-form" action="{% url 'FileList:upload' %}" method="post" enctype="multipart/form-data" >
+    {% csrf_token %}
+    <input type="hidden" name = "store_id" value = '{{ store_id }}'/>
+    <input type="hidden" name = "path" value = '{{ path }}'/>
+    <input type="file" id="upload" name="file" multiple="multiple" /> <br />
+    <input type="submit" value="Upload" />
+</form>
+
+<form id="create_dir" action="{% url 'FileList:create_dir' store_id path %}" method="post">
+    {% csrf_token %}
+    <input type="text" name="dir_name"/>
+    <input type="submit" value="创建文件夹" />
+</form>
+
+<!--同步文件夹-->
+<form id="create-commit-form" action="{% url 'FileList:create_commit' store_id %}" method="post">
+    {% csrf_token %}
+    <input type="submit" value="commit" />
+</form>
+
+</body>
+<script>
+    $.ajaxSetup({
+        headers: { "X-CSRFToken": '{{csrf_token}}' }
+      });
+
+    $('#branch_select').on('change',function(){
+        var tobranch = $('#branch_select option:selected').val()
+        send_url = '/checkout_branch/'+'{{ store_id }}' +'/' + tobranch + '/'
+        // console.log(send_url)
+        $.ajax({
+            type : "POST",
+            url:send_url,
+            success:function(data){location.reload(true);}
+        });
+    });
+</script>
+</html>
