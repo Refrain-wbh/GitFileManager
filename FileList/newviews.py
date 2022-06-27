@@ -86,9 +86,11 @@ def NewBranch(request):
     # 有新的分支指向commit 
     commit.child_num = commit.child_num + 1
     commit.save()
-    
     store.work_branch = branch
     store.save()
+    
+    path = os.path.join(UserLocal,str(store_id))
+    ChangeToCommit(commit,path)
     
     return HttpResponse('sucess')
 

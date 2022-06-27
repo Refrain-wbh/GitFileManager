@@ -98,6 +98,7 @@ def ChangeTree(root_tree,root_path):
 def ChangeToCommit(commit,root_path):
     
     root = commit.root
-    shutil.rmtree(root_path)
+    if os.path.exists(root_path):
+        shutil.rmtree(root_path)
     os.makedirs(root_path)
     ChangeTree(root,root_path)
